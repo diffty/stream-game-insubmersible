@@ -9,6 +9,13 @@ var gameSystem = new GameSystem();
 var gameScreen = new GameScreen(gameSystem);
 
 
+let eventSource = new EventSource("http://localhost:5000/notifications_stream");
+
+eventSource.onmessage = (message) => {
+    gameSystem.receiveEvent(message);
+};
+
+
 function animate(now) {
     now *= 0.001;
     

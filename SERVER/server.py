@@ -216,6 +216,7 @@ def update_player(player_id):
 
         event_payload = {
             "type": "player",
+            "playerId": player_id,
             "content": gameSystem.players[player_id].to_json(),
         }
 

@@ -9,6 +9,26 @@ const renderWidth = 1920;
 const renderHeight = 1080;
 
 
+function findPlayerObject(sceneElement, objectName, objectType) {
+    var foundObjects = []
+
+    if (sceneElement.children) {
+        for (var i in sceneElement.children) {
+            var o = sceneElement.children[i];
+            foundObjects = foundObjects.concat(findPlayerObject(o, objectName, objectType));
+        }
+    }
+
+    if (sceneElement.name.search(objectName) >= 0) {
+        if (sceneElement.type == objectType) {
+            foundObjects.push(sceneElement);
+        }
+    }
+
+    return foundObjects;
+}
+
+
 export class GameScreen {
     constructor(gameSystem) {
         this.gameSystem = gameSystem;
@@ -20,7 +40,6 @@ export class GameScreen {
 
         // SCENE & CAM
         this.scene = new THREE.Scene();
-
         this.camera = null;
 
         // RENDERER
@@ -29,9 +48,12 @@ export class GameScreen {
         this.renderer.setClearColor( 0x000000, 0 ); // the default
         document.body.appendChild( this.renderer.domElement );
 
-
         // ******** SHADER SHIT ********
         this.composer = new EffectComposer(this.renderer);
+
+        // Asset loading
+        this.playerObjects = [];
+        this.alarmLight = null;
 
         gltfLoader.load(
             "./models/overlay.gltf",
@@ -39,7 +61,25 @@ export class GameScreen {
                 this.scene.add(gltf.scene);
 
                 this.camera = gltf.cameras[0];
+                
+                this.alarmLight = findPlayerObject(this.scene, "_Alarm", "PointLight")[0];
 
+                this.gameObjects = {
+
+                }
+
+                for (var i = 0; i < 4; i++) {
+                    let lifeLight = findPlayerObject(this.scene, "_Life_P" + (i+1), "SpotLight");
+                    let oxyMesh = findPlayerObject(this.scene, "_OxygenMeter_P" + (i+1), "Mesh");
+                    
+                    this.playerObjects.push({
+                        "lifeLight": lifeLight[0],
+                        "oxyMesh": oxyMesh[0],
+                    });
+                }
+
+                this.updateSystem();
+                
                 this.renderPass = new RenderPass( this.scene, this.camera );
                 this.renderPass.clearAlpha = 0;
                 
@@ -54,8 +94,24 @@ export class GameScreen {
         //this.composer.addPass( bloomPass );
     }
 
-    update(deltaTime) {
+    updateSystem() {
+        $.ajax({
+            url: "http://localhost:5000/getSystem"
+        }).then((data) => {
+            this.gameSystem.receiveSystemUpdate(data)
+        });
+    }
 
+    update(deltaTime) {
+        for (let i in this.gameSystem.players) {
+            let p = this.gameSystem.players[i];
+            this.playerObjects[i]["lifeLight"].visible = p.isDead ? false : true;
+            this.playerObjects[i]["oxyMesh"].scale.y = p.oxygen / 100.0;
+        }
+
+        if (this.alarmLight) {
+            this.alarmLight.visible = this.gameSystem.game.alarm;
+        }
     }
 
     draw(deltaTime) {

@@ -19,12 +19,23 @@ export class GameSystem {
 
     }
 
+    receiveEvent(message) {
+        let data = JSON.parse(message.data);
+        
+        if (data.type == "game") {
+            this.receiveGameUpdate(data.content);
+        }
+        else if (data.type == "player") {
+            this.receivePlayerUpdate(data.content, data.playerId);
+        }
+    }
+
     receiveSystemUpdate(data) {
         this.players = []
 
         for (let p in data.players) {
             let newPlayer = new Player();
-            newPlayer.receiveUpdate(p);
+            newPlayer.receiveUpdate(data.players[p]);
             this.players.push(newPlayer);
         }
 

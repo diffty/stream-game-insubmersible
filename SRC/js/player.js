@@ -1,6 +1,6 @@
 export class Player {
     constructor(name, oxygen, isDead, role) {
-        this.name = name;
+        this.playerName = name;
         this.oxygen = oxygen;
         this.isDead = isDead;
         this.role = role;

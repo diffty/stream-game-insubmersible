@@ -78,11 +78,29 @@ function updatePlayer(playerNum) {
     });
 }
 
+function receiveEvent(message) {
+    let data = JSON.parse(message.data);
+    
+    if (data.type == "game") {
+        gameSystem.receiveGameUpdate(data.content);
+    }
+    else if (data.type == "player") {
+        gameSystem.receivePlayerUpdate(data.content, data.playerId);
+
+        let playerElement = playerElementList[data.playerId];
+
+        playerElement["playerNum"] = data.playerId;
+        playerElement["playerName"] = data.content.playerName;
+        playerElement["oxygen"] = data.content.oxygen;
+        playerElement["isDead"] = data.content.isDead;
+    }
+}
+
 
 let eventSource = new EventSource("http://localhost:5000/notifications_stream");
 
 eventSource.onmessage = (message) => {
-    console.log(message.data);
+    receiveEvent(message);
 };
 
 // $("#refresh-btn").on("click", () => {
