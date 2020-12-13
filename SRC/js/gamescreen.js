@@ -45,7 +45,7 @@ export class GameScreen {
 
         // RENDERER
         this.renderer = new THREE.WebGLRenderer( { alpha: true, antialias: true } );
-        this.renderer.setSize( renderHeight, renderHeight );
+        this.renderer.setSize( renderWidth, renderHeight );
         this.renderer.setClearColor( 0x000000, 0 ); // the default
         document.body.appendChild( this.renderer.domElement );
 
@@ -62,7 +62,9 @@ export class GameScreen {
                 this.scene.add(gltf.scene);
 
                 this.camera = gltf.cameras[0];
-                
+                this.camera.aspect = 1.778;
+                this.camera.updateProjectionMatrix();
+
                 this.alarmLight = findPlayerObject(this.scene, "_Alarm", "PointLight")[0];
                 this.clockNeedle = findPlayerObject(this.scene, "_Clock", "Mesh")[0];
 
