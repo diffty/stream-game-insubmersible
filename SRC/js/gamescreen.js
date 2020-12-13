@@ -107,7 +107,7 @@ export class GameScreen {
             let p = this.gameSystem.players[i];
             this.playerObjects[i]["lifeLight"].visible = p.isDead ? false : true;
 
-            let oxyBarTargetScale = p.oxygen / 100.0;
+            let oxyBarTargetScale = p.oxygen / this.gameSystem.game.maxOxygen;
             let oxyBarDelta = this.playerObjects[i]["oxyMesh"].scale.y - oxyBarTargetScale;
 
             if (Math.abs(oxyBarDelta) > 0.01) {
