@@ -1,11 +1,12 @@
 import { GameSystem } from './gamesystem.js'
 
 
-let gameSystem = new GameSystem();
+var gameSystem = new GameSystem();
 
 let playerElementList = []
 
 $("#game").bind("changed", (e) => {
+    console.log("c h a n g e d ")
     let newData = {}
 
     newData[e.detail.propertyName] = e.detail.newValue;
@@ -18,6 +19,7 @@ $("#game").bind("changed", (e) => {
 })
 
 function updateSystem() {
+    console.log("SYSTEM UPDATE")
     $.ajax({
         url: "http://localhost:5000/getSystem"
     }).then((data) => {
@@ -29,7 +31,6 @@ function updateSystem() {
 
         for (let k in data.game) {
             let v = data.game[k];
-            console.log(k, v);
             $("#game").prop(k, v);
         }
 
@@ -40,6 +41,7 @@ function updateSystem() {
 
             newPlayerElement["playerNum"] = new Number(i);
             newPlayerElement["playerName"] = p.playerName;
+            newPlayerElement["role"] = p.role;
             newPlayerElement["oxygen"] = p.oxygen;
             newPlayerElement["isDead"] = p.isDead;
 
@@ -79,18 +81,23 @@ function updatePlayer(playerNum) {
 }
 
 function receiveEvent(message) {
+    console.log("Received event :", message)
+    gameSystem.receiveEvent(message);
+
     let data = JSON.parse(message.data);
-    
+
     if (data.type == "game") {
-        gameSystem.receiveGameUpdate(data.content);
+        for (let k in data.content) {
+            let v = data.content[k];
+            $("#game").prop(k, v);
+        }
     }
     else if (data.type == "player") {
-        gameSystem.receivePlayerUpdate(data.content, data.playerId);
-
         let playerElement = playerElementList[data.playerId];
 
         playerElement["playerNum"] = data.playerId;
         playerElement["playerName"] = data.content.playerName;
+        playerElement["role"] = data.content.role;
         playerElement["oxygen"] = data.content.oxygen;
         playerElement["isDead"] = data.content.isDead;
     }
@@ -103,20 +110,25 @@ eventSource.onmessage = (message) => {
     receiveEvent(message);
 };
 
-// $("#refresh-btn").on("click", () => {
-//     updateSystem();
-// })
-// 
-// for (var i = 0 ; i < 4 ; i++) {
-//     let fieldList = ["name", "oxygen"]
-//     for (var f in fieldList) {
-//         let fieldName = fieldList[f]
-//         var el = document.getElementById("player-" + i + "-" + fieldName + "-btn");
-//         el.addEventListener("click",
-//         () => {
-//             editPlayer(i, fieldName)
-//         }, false);
-//     }
-// }
+
 
 updateSystem();
+
+
+// VARS
+let then = 0;
+
+function animate(now) {
+    now *= 0.001;
+    
+    const deltaTime = now - then;
+    then = now;
+
+    gameSystem.update(deltaTime);
+    $("#game").prop("currTime", gameSystem.game.currTime);
+
+    requestAnimationFrame(animate);
+
+}
+
+requestAnimationFrame(animate);

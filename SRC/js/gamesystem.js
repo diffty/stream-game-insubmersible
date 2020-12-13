@@ -15,8 +15,8 @@ export class GameSystem {
         }
     }
 
-    update() {
-
+    update(deltaTime) {
+        this.game.update(deltaTime);
     }
 
     receiveEvent(message) {
@@ -27,6 +27,29 @@ export class GameSystem {
         }
         else if (data.type == "player") {
             this.receivePlayerUpdate(data.content, data.playerId);
+        }
+        else if (data.type == "game_event") {
+            this.receiveGameUpdate(data.game_data);
+
+            if (data.content == "end") {
+
+            }
+        }
+        else if (data.type == "timer_event") {
+            this.receiveGameUpdate(data.game_data);
+
+            if (data.content == "start") {
+                this.game.start();
+            }
+            else if (data.content == "pause") {
+                this.game.pause();
+            }
+            else if (data.content == "reset") {
+                this.game.reset();
+            }
+            else if (data.content == "set") {
+                
+            }
         }
     }
 

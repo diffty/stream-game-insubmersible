@@ -63,10 +63,7 @@ export class GameScreen {
                 this.camera = gltf.cameras[0];
                 
                 this.alarmLight = findPlayerObject(this.scene, "_Alarm", "PointLight")[0];
-
-                this.gameObjects = {
-
-                }
+                this.clockNeedle = findPlayerObject(this.scene, "_Clock", "Mesh")[0];
 
                 for (var i = 0; i < 4; i++) {
                     let lifeLight = findPlayerObject(this.scene, "_Life_P" + (i+1), "SpotLight");
@@ -103,14 +100,29 @@ export class GameScreen {
     }
 
     update(deltaTime) {
+        this.gameSystem.update(deltaTime);
+
         for (let i in this.gameSystem.players) {
             let p = this.gameSystem.players[i];
             this.playerObjects[i]["lifeLight"].visible = p.isDead ? false : true;
-            this.playerObjects[i]["oxyMesh"].scale.y = p.oxygen / 100.0;
+
+            let oxyBarTargetScale = p.oxygen / 100.0;
+            let oxyBarDelta = this.playerObjects[i]["oxyMesh"].scale.y - oxyBarTargetScale;
+
+            if (Math.abs(oxyBarDelta) > 0.01) {
+                this.playerObjects[i]["oxyMesh"].scale.y -= oxyBarDelta * deltaTime * 3;
+            }
+            else {
+                this.playerObjects[i]["oxyMesh"].scale.y = oxyBarTargetScale;
+            }
         }
 
         if (this.alarmLight) {
             this.alarmLight.visible = this.gameSystem.game.alarm;
+        }
+
+        if (this.clockNeedle) {
+            this.clockNeedle.rotation.x = -(this.gameSystem.game.currTime / this.gameSystem.game.maxTime) * 2 * Math.PI;
         }
     }
 

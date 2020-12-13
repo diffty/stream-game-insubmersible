@@ -1,5 +1,13 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit-element/lit-element.js?module';
 
+
+function getFormattedTime(timestamp) {
+    let hours = Math.floor(timestamp / 3600) % 24;
+    let minutes = Math.floor(timestamp / 60) % 60;
+    let seconds = Math.floor(timestamp) % 60;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+}
+
 export class GameAdminElement extends LitElement {
     constructor() {
         super()
@@ -19,6 +27,7 @@ export class GameAdminElement extends LitElement {
     }
 
     onCurrTimeChanged(e) {
+        console.log("changed")
         let propertyName = e.target.id;
         this.currTime = e.target.value;
         this.onPropertyChanged(propertyName, e.target.value);
@@ -48,17 +57,37 @@ export class GameAdminElement extends LitElement {
         this.dispatchEvent(gameChangedEvent);
     }
 
+    onStartButtonClick() {
+        $.get({
+            url: "http://localhost:5000/start",
+        })
+    }
+
+    onPauseButtonClick() {
+        $.get({
+            url: "http://localhost:5000/pause",
+        })
+    }
+
+    onResetButtonClick() {
+        $.get({
+            url: "http://localhost:5000/reset",
+        })
+    }
+
     render() {
         return html`
         <li>
             <h2>Game</h2>
             <ul>
-                <li>Curr Time : <input id="currTime" value=${this.currTime} @change="${this.onCurrTimeChanged}" /></li>
-                <li>Max Time : <input id="maxTime" value=${this.maxTime} @change="${this.onMaxTimeChanged}" /></li>
+                <li>Elapsed : ${getFormattedTime(this.currTime)}</li>
+                <li>Remaining : ${getFormattedTime(this.maxTime - this.currTime)}</li>
+                <li>Curr Time : <input id="currTime" .value=${Math.floor(this.currTime)} @change="${this.onCurrTimeChanged}" /></li>
+                <li>Max Time : <input id="maxTime" .value=${this.maxTime} @change="${this.onMaxTimeChanged}" /></li>
                 <li>Alarm ? <input id="alarm" ?checked=${this.alarm} type="checkbox" @change="${this.onAlarmChanged}" /></li>
-                <button>Start</button>
-                <button>Pause</button>
-                <button>Reset</button>
+                <button @click="${this.onStartButtonClick}">Start</button>
+                <button @click="${this.onPauseButtonClick}">Pause</button>
+                <button @click="${this.onResetButtonClick}">Reset</button>
             </ul>
         </li>
         `;

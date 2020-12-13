@@ -82,21 +82,51 @@ class Game(Serializable):
     
     def start(self):
         self.isTimerActive = True
+        self.on_timer_event("start")
     
-    def stop(self):
+    def pause(self):
         self.isTimerActive = False
+        self.on_timer_event("pause")
+    
+    def reset(self):
+        self.currTime = 0
+        self.pause()
+    
+    def set_timer(self, new_time):
+        gameSystem.game.currTime = new_time
+        self.on_game_updated()
+    
+    def on_game_updated(self):
+        event_payload = {
+            "type": "game",
+            "content": gameSystem.game.to_json(),
+        }
+
+        for q in NOTIFICATION_QUEUES:
+            q.put(json.dumps(event_payload))
     
     def update(self, delta_time):
         if self.isTimerActive:
             self.currTime += delta_time
-            if self.currTime >= self.maxTime and not self.game_is_over:
+            if self.currTime >= self.maxTime and not self.isGameEnded:
                 self.isGameEnded = True
-                self.on_game_ended()
+                self.on_game_event("end")
     
-    def on_game_ended(self):
+    def on_timer_event(self, event_type):
+        event_payload = {
+            "type": "timer_event",
+            "content": event_type,
+            "game_data": gameSystem.game.to_json(),
+        }
+
+        for q in NOTIFICATION_QUEUES:
+            q.put(json.dumps(event_payload))
+    
+    def on_game_event(self, event_type):
         event_payload = {
             "type": "game_event",
-            "content": "end",
+            "content": event_type,
+            "game_data": gameSystem.game.to_json(),
         }
 
         for q in NOTIFICATION_QUEUES:
@@ -146,6 +176,23 @@ class GameSystem(Serializable):
 
 app = Flask(__name__)
 gameSystem = GameSystem()
+
+
+def main():
+    then = time.time()
+
+    while True:
+        now = time.time()
+        deltaTime = now - then
+        then = now
+
+        gameSystem.update(deltaTime)
+
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+t = threading.Thread(target=main)
+t.start()
 
 
 
@@ -276,16 +323,31 @@ def set_timer(new_time):
 @app.route('/start', methods=['GET'])
 def start():
     if request.method == "GET":
-        data = request.get_json()
-        if "newTime" in data:
-            gameSystem.game.currTime = data["newTime"]
+        gameSystem.game.start()
+    
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
 
-            event_payload = {
-                "type": "game",
-                "content": jsonify(gameSystem.game.to_json()),
-            }
+    return response
 
-            for q in NOTIFICATION_QUEUES:
-                q.put(json.dumps(event_payload))
 
-    return ""
+@app.route('/pause', methods=['GET'])
+def pause():
+    if request.method == "GET":
+        gameSystem.game.pause()
+    
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    return response
+
+
+@app.route('/reset', methods=['GET'])
+def reset():
+    if request.method == "GET":
+        gameSystem.game.reset()
+    
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    return response

@@ -15,7 +15,6 @@ eventSource.onmessage = (message) => {
     gameSystem.receiveEvent(message);
 };
 
-
 function animate(now) {
     now *= 0.001;
     

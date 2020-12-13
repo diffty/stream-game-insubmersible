@@ -5,7 +5,7 @@ import { GameSystem } from './gamesystem.js'
 let urlVars = getUrlVars();
 var playerNum = null;
 
-let gameSystem = new GameSystem();
+var gameSystem = new GameSystem();
 
 var playerElement = null
 
@@ -40,6 +40,7 @@ function updateSystem() {
 
         newPlayerElement["playerNum"] = playerNum;
         newPlayerElement["playerName"] = p.playerName;
+        newPlayerElement["role"] = p.role;
         newPlayerElement["oxygen"] = p.oxygen;
         newPlayerElement["isDead"] = p.isDead;
 
@@ -78,16 +79,15 @@ function updatePlayer(playerNum) {
 }
 
 function receiveEvent(message) {
+    gameSystem.receiveEvent(message);
+
     let data = JSON.parse(message.data);
     
-    if (data.type == "game") {
-        gameSystem.receiveGameUpdate(data.content);
-    }
-    else if (data.type == "player") {
+    if (data.type == "player") {
         if (data.playerId == playerNum) {
-            gameSystem.receivePlayerUpdate(data.content, data.playerId);
             playerElement["playerNum"] = data.playerId;
             playerElement["playerName"] = data.content.playerName;
+            playerElement["role"] = data.content.role;
             playerElement["oxygen"] = data.content.oxygen;
             playerElement["isDead"] = data.content.isDead;
         }
