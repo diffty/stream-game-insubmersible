@@ -206,7 +206,8 @@ UnrealBloomPassAlpha.prototype = Object.assign( Object.create( Pass.prototype ),
 
     render: function ( renderer, writeBuffer, readBuffer, deltaTime, maskActive ) {
 
-        this.oldClearColor.copy( renderer.getClearColor() );
+        var clearColor = new Color();
+        this.oldClearColor.copy( clearColor );
         this.oldClearAlpha = renderer.getClearAlpha();
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;
