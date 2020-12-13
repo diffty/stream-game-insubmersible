@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit-element/lit-element.js?module';
+import { CONFIG } from '../config.js'
 
 
 function getFormattedTime(timestamp) {
@@ -59,19 +60,19 @@ export class GameAdminElement extends LitElement {
 
     onStartButtonClick() {
         $.get({
-            url: "http://localhost:5000/start",
+            url: `http://${CONFIG.host}:${CONFIG.port}/start`,
         })
     }
 
     onPauseButtonClick() {
         $.get({
-            url: "http://localhost:5000/pause",
+            url: `http://${CONFIG.host}:${CONFIG.port}/pause`,
         })
     }
 
     onResetButtonClick() {
         $.get({
-            url: "http://localhost:5000/reset",
+            url: `http://${CONFIG.host}:${CONFIG.port}/reset`,
         })
     }
 

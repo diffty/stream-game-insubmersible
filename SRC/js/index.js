@@ -1,5 +1,6 @@
 import { GameScreen } from './gamescreen.js'
 import { GameSystem } from './gamesystem.js'
+import { CONFIG } from '../config.js'
 
 
 // VARS
@@ -9,7 +10,7 @@ var gameSystem = new GameSystem();
 var gameScreen = new GameScreen(gameSystem);
 
 
-let eventSource = new EventSource("http://localhost:5000/notifications_stream");
+let eventSource = new EventSource(`http://${CONFIG.host}:${CONFIG.port}/notifications_stream`);
 
 eventSource.onmessage = (message) => {
     gameSystem.receiveEvent(message);

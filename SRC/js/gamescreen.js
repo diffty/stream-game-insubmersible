@@ -1,4 +1,5 @@
 import * as THREE from './libs/three/build/three.module.js';
+import { CONFIG } from '../config.js'
 
 import { EffectComposer } from './libs/three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from './libs/three/examples/jsm/postprocessing/RenderPass.js';
@@ -93,7 +94,7 @@ export class GameScreen {
 
     updateSystem() {
         $.ajax({
-            url: "http://localhost:5000/getSystem"
+            url: `http://${CONFIG.host}:${CONFIG.port}/getSystem`
         }).then((data) => {
             this.gameSystem.receiveSystemUpdate(data)
         });
