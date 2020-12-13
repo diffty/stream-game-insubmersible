@@ -1,4 +1,5 @@
 import { GameSystem } from './gamesystem.js'
+import { CONFIG } from '../config.js'
 
 
 var gameSystem = new GameSystem();
@@ -12,7 +13,7 @@ $("#game").bind("changed", (e) => {
     newData[e.detail.propertyName] = e.detail.newValue;
     
     $.post({
-        url: "http://localhost:5000/updateGame",
+        url: `http://${CONFIG.host}:${CONFIG.port}/updateGame`,
         data: newData,
         dataType: "json",
     });
@@ -21,7 +22,7 @@ $("#game").bind("changed", (e) => {
 function updateSystem() {
     console.log("SYSTEM UPDATE")
     $.ajax({
-        url: "http://localhost:5000/getSystem"
+        url: `http://${CONFIG.host}:${CONFIG.port}/getSystem`
     }).then((data) => {
         gameSystem.receiveSystemUpdate(data)
 
@@ -53,7 +54,7 @@ function updateSystem() {
                 newData[e.detail.propertyName] = e.detail.newValue;
                 
                 $.post({
-                    url: "http://localhost:5000/updatePlayer/" + newPlayerElement["playerNum"],
+                    url: `http://${CONFIG.host}:${CONFIG.port}/updatePlayer/${newPlayerElement["playerNum"]}`,
                     data: newData,
                     dataType: "json",
                 });
@@ -66,7 +67,7 @@ function updateSystem() {
 
 function updateGame() {
     $.ajax({
-        url: "http://localhost:5000/getGame"
+        url: `http://${CONFIG.host}:${CONFIG.port}/getGame`
     }).then((data) => {
         gameSystem.receiveGameUpdate(data)
     });
@@ -74,7 +75,7 @@ function updateGame() {
 
 function updatePlayer(playerNum) {
     $.ajax({
-        url: "http://localhost:5000/getPlayer/" + playerNum
+        url: `http://${CONFIG.host}:${CONFIG.port}/getPlayer/${playerNum}`
     }).then((data) => {
         gameSystem.receivePlayerUpdate(data, playerNum)
     });
@@ -104,7 +105,7 @@ function receiveEvent(message) {
 }
 
 
-let eventSource = new EventSource("http://localhost:5000/notifications_stream");
+let eventSource = new EventSource(`http://${CONFIG.host}:${CONFIG.port}/notifications_stream`);
 
 eventSource.onmessage = (message) => {
     receiveEvent(message);
