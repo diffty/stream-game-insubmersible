@@ -71,7 +71,11 @@ export class GameScreen {
                 for (var i = 0; i < 4; i++) {
                     let lifeLight = findPlayerObject(this.scene, "_Life_P" + (i+1), "SpotLight");
                     let oxyMesh = findPlayerObject(this.scene, "_OxygenMeter_P" + (i+1), "Mesh");
-                    
+
+                    // Tweaking Oxygen Bars
+                    oxyMesh[0].material.emissive = new THREE.Color(0.0, 0.376085, 1);
+                    oxyMesh[0].material.emissiveIntensity = 1.2;
+
                     this.playerObjects.push({
                         "lifeLight": lifeLight[0],
                         "oxyMesh": oxyMesh[0],
@@ -91,7 +95,7 @@ export class GameScreen {
         bloomPass.threshold = 0.0;
         bloomPass.strength = 2.0;
         bloomPass.radius = 1.0;
-        //this.composer.addPass( bloomPass );
+        this.composer.addPass( bloomPass );
     }
 
     updateSystem() {
