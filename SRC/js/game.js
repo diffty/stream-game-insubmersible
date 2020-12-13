@@ -3,6 +3,7 @@ export class Game {
         this.alarm = false;
         this.currTime = 0;
         this.maxTime = 3600;
+        this.maxOxygen = 75;
         this.isTimerActive = false;
         this.isGameEnded = true;
         this.isGameStarted = false;

@@ -6,7 +6,7 @@ import { CONFIG } from '../config.js'
 let urlVars = getUrlVars();
 var playerNum = null;
 
-var gameSystem = new GameSystem();
+export var gameSystem = new GameSystem();
 
 var playerElement = null
 
@@ -44,6 +44,7 @@ function updateSystem() {
         newPlayerElement["role"] = p.role;
         newPlayerElement["oxygen"] = p.oxygen;
         newPlayerElement["isDead"] = p.isDead;
+        newPlayerElement["maxOxygen"] = gameSystem.game.maxOxygen;
 
         playerElement = newPlayerElement;
 
@@ -91,6 +92,7 @@ function receiveEvent(message) {
             playerElement["role"] = data.content.role;
             playerElement["oxygen"] = data.content.oxygen;
             playerElement["isDead"] = data.content.isDead;
+            playerElement["maxOxygen"] = gameSystem.game.maxOxygen;
         }
     }
 }

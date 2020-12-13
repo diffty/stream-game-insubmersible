@@ -7,6 +7,7 @@ export class GameSystem {
         this.players = []
         this.game = new Game();
         this.eventsLog = [];
+        this.adminMode = false;
     }
 
     createPlayers(numPlayers) {

@@ -66,7 +66,7 @@ class Serializable:
 class Player(Serializable):
     def __init__(self):
         self.playerName = ""
-        self.oxygen = 100
+        self.oxygen = 75
         self.isDead = False
         self.role = ""
 
@@ -76,6 +76,7 @@ class Game(Serializable):
         self.alarm = False
         self.currTime = 0
         self.maxTime = 3600
+        self.maxOxygen = 75
         self.isTimerActive = False
         self.isGameEnded = True
         self.isGameStarted = False

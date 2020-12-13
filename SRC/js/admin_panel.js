@@ -2,12 +2,12 @@ import { GameSystem } from './gamesystem.js'
 import { CONFIG } from '../config.js'
 
 
-var gameSystem = new GameSystem();
+export var gameSystem = new GameSystem();
+gameSystem.adminMode = true;
 
 let playerElementList = []
 
 $("#game").bind("changed", (e) => {
-    console.log("c h a n g e d ")
     let newData = {}
 
     newData[e.detail.propertyName] = e.detail.newValue;
@@ -20,7 +20,6 @@ $("#game").bind("changed", (e) => {
 })
 
 function updateSystem() {
-    console.log("SYSTEM UPDATE")
     $.ajax({
         url: `http://${CONFIG.host}:${CONFIG.port}/getSystem`
     }).then((data) => {
@@ -45,6 +44,8 @@ function updateSystem() {
             newPlayerElement["role"] = p.role;
             newPlayerElement["oxygen"] = p.oxygen;
             newPlayerElement["isDead"] = p.isDead;
+            newPlayerElement["adminMode"] = true;
+            newPlayerElement["maxOxygen"] = gameSystem.game.maxOxygen;
 
             playerElementList.push(newPlayerElement);
 
@@ -101,6 +102,7 @@ function receiveEvent(message) {
         playerElement["role"] = data.content.role;
         playerElement["oxygen"] = data.content.oxygen;
         playerElement["isDead"] = data.content.isDead;
+        playerElement["maxOxygen"] = gameSystem.game.maxOxygen;
     }
 }
 
@@ -129,7 +131,6 @@ function animate(now) {
     $("#game").prop("currTime", gameSystem.game.currTime);
 
     requestAnimationFrame(animate);
-
 }
 
 requestAnimationFrame(animate);

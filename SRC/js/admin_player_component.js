@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit-element/lit-element.js?module';
 
+
 export class PlayerElement extends LitElement {
     constructor() {
         super()
@@ -13,6 +14,8 @@ export class PlayerElement extends LitElement {
             role: {type: String},
             oxygen: {type: Number},
             isDead: {type: Boolean},
+            adminMode: {type: Boolean},
+            maxOxygen: {type: Number},
         }
     }
         
@@ -33,9 +36,11 @@ export class PlayerElement extends LitElement {
     }
     
     onOxygenChanged(e) {
-        let propertyName = e.target.id;
-        this.oxygen = e.target.value;
-        this.onPropertyChanged(propertyName, e.target.value);
+        if (e.target.value <= this.maxOxygen) {
+            let propertyName = e.target.id;
+            this.oxygen = e.target.value;
+            this.onPropertyChanged(propertyName, e.target.value);
+        }
     }
     
     onIsDeadChanged(e) {
@@ -56,14 +61,31 @@ export class PlayerElement extends LitElement {
         this.dispatchEvent(playerChangedEvent);
     }
 
+    onAddOxygen() {
+        if (this.oxygen + 5 <= this.maxOxygen) {
+            this.oxygen += 5;
+            this.onPropertyChanged("oxygen", this.oxygen);
+        }
+    }
+
+    onRemoveOxygen() {
+        if (this.oxygen - 5 >= 0) {
+            this.oxygen -= 5;
+            this.onPropertyChanged("oxygen", this.oxygen);
+        }
+    }
+
     render() {
         return html`
         <li>
             <h2>Player ${this.playerNum + 1}</h2>
             <ul>
-                <li>Name : <input id="playerName" value=${this.playerName} @change="${this.onPlayerNameChanged}" /></li>
-                <li>Role : <input id="role" value=${this.role} @change="${this.onRoleChanged}" /></li>
-                <li>Oxygen : <input id="oxygen" value=${this.oxygen} @change="${this.onOxygenChanged}" /></li>
+                <li>Name : <input id="playerName" .value=${this.playerName} @change="${this.onPlayerNameChanged}" /></li>
+                <li>Role : <input id="role" .value=${this.role} @change="${this.onRoleChanged}" /></li>
+                <li>Oxygen : <input id="oxygen" type="number" ?readonly=${!this.adminMode} size="3" .value=${this.oxygen} @change="${this.onOxygenChanged}" />
+                    <button @click=${this.onAddOxygen}>+5</button>
+                    <button @click=${this.onRemoveOxygen}>-5</button>
+                </li>
                 <li>Dead ? <input id="isDead" ?checked=${this.isDead} type="checkbox" @change="${this.onIsDeadChanged}" /></li>
             </ul>
         </li>
