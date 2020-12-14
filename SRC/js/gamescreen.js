@@ -80,6 +80,9 @@ export class GameScreen {
                     let oxyMesh = findPlayerObject(this.scene, "_OxygenMeter_P" + (i+1), "Mesh");
                     let envMesh = findPlayerObject(this.scene, "_EnvSphere", "Mesh");
                     let oxyPipeMesh = findPlayerObject(this.scene, "_OxygenPipe", "Mesh");
+                    let hublotsMesh = findPlayerObject(this.scene, "_Hublots", "Mesh");
+                    let bgMesh = findPlayerObject(this.scene, "_Fond", "Mesh");
+                    let clockEdgeMesh = findPlayerObject(this.scene, "_ClockEdge", "Mesh");
 
                     envMesh[0].material.emissive = new THREE.Color(1, 1, 1);
                     envMesh[0].material.emissiveMap = envMesh[0].material.map;
@@ -90,6 +93,9 @@ export class GameScreen {
                     oxyMesh[0].material.emissiveIntensity = 1.2;
 
                     oxyPipeMesh[0].material.envMap = this.cubeCamera.renderTarget.texture;
+                    hublotsMesh[0].material.envMap = this.cubeCamera.renderTarget.texture;
+                    bgMesh[0].material.envMap = this.cubeCamera.renderTarget.texture;
+                    clockEdgeMesh[0].material.envMap = this.cubeCamera.renderTarget.texture;
 
                     this.playerObjects.push({
                         "lifeLight": lifeLight[0],
@@ -144,7 +150,7 @@ export class GameScreen {
         }
 
         if (this.clockNeedle) {
-            this.clockNeedle.rotation.x = -(this.gameSystem.game.currTime / this.gameSystem.game.maxTime) * 2 * Math.PI;
+            this.clockNeedle.rotation.x = -(this.gameSystem.game.currTime / this.gameSystem.game.maxTime) * (Math.PI * 2);
         }
         this.cubeCamera.updateCubeMap(this.renderer, this.scene);
     }
