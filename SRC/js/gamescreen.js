@@ -145,8 +145,6 @@ export class GameScreen {
     }
 
     update(deltaTime) {
-        this.gameSystem.update(deltaTime);
-
         for (let i in this.gameSystem.players) {
             let p = this.gameSystem.players[i];
             this.playerObjects[i]["lifeLight"].visible = p.isDead ? false : true;
