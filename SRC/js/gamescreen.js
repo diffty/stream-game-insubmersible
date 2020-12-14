@@ -6,6 +6,9 @@ import { RenderPass } from './libs/three/examples/jsm/postprocessing/RenderPass.
 import { UnrealBloomPassAlpha } from './postprocessing/UnrealBloomPassAlpha.js';
 import { GLTFLoader } from './libs/three/examples/jsm/loaders/GLTFLoader.js';
 
+import { SSAOPass } from './libs/three/examples/jsm/postprocessing/SSAOPass.js';
+
+
 const renderWidth = 1920;
 const renderHeight = 1080;
 
@@ -113,6 +116,14 @@ export class GameScreen {
                 this.renderPass.clearAlpha = 0;
                 
                 this.composer.addPass( this.renderPass );
+
+                //const ssaoPass = new SSAOPass( this.scene, this.camera, renderWidth, renderHeight );
+                //ssaoPass.kernelRadius = 16;
+                //ssaoPass.minDistance =  0.02 ;
+                //ssaoPass.maxDistance = 0.3 ;
+                //ssaoPass.output = SSAOPass.OUTPUT.Beauty;
+
+                //this.composer.addPass( ssaoPass );
             }
         )
 
@@ -121,6 +132,8 @@ export class GameScreen {
         bloomPass.strength = 2.0;
         bloomPass.radius = 1.0;
         this.composer.addPass( bloomPass );
+
+
     }
 
     updateSystem() {
@@ -163,7 +176,7 @@ export class GameScreen {
         if (this.clockNeedle) {
             this.clockNeedle.rotation.x = -(this.gameSystem.game.currTime / this.gameSystem.game.maxTime) * (Math.PI * 2);
         }
-        this.cubeCamera.updateCubeMap(this.renderer, this.scene);
+        this.cubeCamera.update(this.renderer, this.scene);
     }
 
     draw(deltaTime) {
