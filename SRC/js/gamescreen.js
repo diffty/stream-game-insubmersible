@@ -52,6 +52,12 @@ export class GameScreen {
         // ******** SHADER SHIT ********
         this.composer = new EffectComposer(this.renderer);
 
+        // CUBE MAP
+        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 128, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
+        this.cubeCamera = new THREE.CubeCamera(0.1, 100000, cubeRenderTarget); 
+        this.cubeCamera.position.x += 8;
+        this.scene.add(this.cubeCamera);
+
         // Asset loading
         this.playerObjects = [];
         this.alarmLight = null;
@@ -67,14 +73,23 @@ export class GameScreen {
 
                 this.alarmLight = findPlayerObject(this.scene, "_Alarm", "PointLight")[0];
                 this.clockNeedle = findPlayerObject(this.scene, "_Clock", "Mesh")[0];
+                
 
                 for (var i = 0; i < 4; i++) {
                     let lifeLight = findPlayerObject(this.scene, "_Life_P" + (i+1), "SpotLight");
                     let oxyMesh = findPlayerObject(this.scene, "_OxygenMeter_P" + (i+1), "Mesh");
+                    let envMesh = findPlayerObject(this.scene, "_EnvSphere", "Mesh");
+                    let oxyPipeMesh = findPlayerObject(this.scene, "_OxygenPipe", "Mesh");
+
+                    envMesh[0].material.emissive = new THREE.Color(1, 1, 1);
+                    envMesh[0].material.emissiveMap = envMesh[0].material.map;
+                    envMesh[0].material.emissiveIntensity = 2;
 
                     // Tweaking Oxygen Bars
                     oxyMesh[0].material.emissive = new THREE.Color(0.0, 0.376085, 1);
                     oxyMesh[0].material.emissiveIntensity = 1.2;
+
+                    oxyPipeMesh[0].material.envMap = this.cubeCamera.renderTarget.texture;
 
                     this.playerObjects.push({
                         "lifeLight": lifeLight[0],
@@ -131,6 +146,7 @@ export class GameScreen {
         if (this.clockNeedle) {
             this.clockNeedle.rotation.x = -(this.gameSystem.game.currTime / this.gameSystem.game.maxTime) * 2 * Math.PI;
         }
+        this.cubeCamera.updateCubeMap(this.renderer, this.scene);
     }
 
     draw(deltaTime) {
