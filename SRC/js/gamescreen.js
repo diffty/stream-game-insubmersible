@@ -72,8 +72,12 @@ export class GameScreen {
                 this.camera.updateProjectionMatrix();
 
                 this.alarmLight = findPlayerObject(this.scene, "_Alarm", "PointLight")[0];
+                this.alarmLEDMesh = findPlayerObject(this.scene, "_AlarmLED", "Mesh")[0];
                 this.clockNeedle = findPlayerObject(this.scene, "_Clock", "Mesh")[0];
+                this.oxyMeterGlass = findPlayerObject(this.scene, "_OxygenMeter_Glass", "Mesh")[0];
                 
+                this.oxyMeterGlass.material.envMap = this.cubeCamera.renderTarget.texture;
+                this.oxyMeterGlass.material.reflectivity = 1.0;
 
                 for (var i = 0; i < 4; i++) {
                     let lifeLight = findPlayerObject(this.scene, "_Life_P" + (i+1), "SpotLight");
@@ -147,6 +151,13 @@ export class GameScreen {
 
         if (this.alarmLight) {
             this.alarmLight.visible = this.gameSystem.game.alarm;
+
+            if (this.alarmLEDMesh && this.gameSystem.game.alarm) {
+                this.alarmLEDMesh.material.emissive = new THREE.Color(255, 0, 0);
+            }
+            else {
+                this.alarmLEDMesh.material.emissive = new THREE.Color(0, 0, 0);
+            }
         }
 
         if (this.clockNeedle) {
