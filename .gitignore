@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# JS
+node_modules/
+
+# Misc
+*.log
+
+# 3d assets
+*.blend1
