@@ -24,7 +24,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost:5500/SRC",
+            "url": "http://localhost:5500/CLIENT",
             "webRoot": "${workspaceFolder}"
         }
     ]
